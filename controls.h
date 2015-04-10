@@ -45,7 +45,6 @@ class SwitchedToggleControl : public Control
         Debounced toggleControl;
         bool enableControl = RELAY_OFF;
         void switchAction(int state);
-        void getPacket(uint8_t *buff);
         uint8_t switchPin;
         uint8_t relayPin;
 };
