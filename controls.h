@@ -28,6 +28,7 @@ class Control
         Control(const uint8_t nodeId, const uint8_t controlId);
         uint8_t getId();
         void registerControl();
+        void loop();
 
     private:
         uint8_t id;
@@ -36,12 +37,16 @@ class Control
 class SwitchedToggleControl : public Control
 {
     public:
-        SwitchedToggleControl(const int pin, const uint8_t nodeId, const uint8_t controlId);
+        SwitchedToggleControl(const uint8_t switchPin, const uint8_t relayPin, const uint8_t nodeId, const uint8_t controlId);
+        void setToggleControl(bool status);
+        void loop();
 
     private:
         Debounced toggleControl;
         bool enableControl = RELAY_OFF;
         void switchAction(int state);
         void getPacket(uint8_t *buff);
+        uint8_t switchPin;
+        uint8_t relayPin;
 };
 #endif

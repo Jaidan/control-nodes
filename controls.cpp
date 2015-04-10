@@ -1,4 +1,5 @@
 #include "Arduino.h"
+#include "../debounced/debounced.h"
 #include "controls.h"
 
 Control::Control(const uint8_t nodeId, const uint8_t controlId)
@@ -24,7 +25,15 @@ void Control::registerControl()
     RadioNode::sendData((const void *)data, RF69_MAX_DATA_LEN);
 }
 
-SwitchedToggleControl::SwitchedToggleControl(const int pin, const uint8_t nodeId, const uint8_t controlId) : toggleControl(pin, (debfuncptr)&SwitchedToggleControl::switchAction), Control(nodeId, controlId)
+void Control::loop()
+{
+}
+
+SwitchedToggleControl::SwitchedToggleControl(const uint8_t switchPin, const uint8_t relayPin, const uint8_t nodeId, const uint8_t controlId) : 
+    relayPin(relayPin),
+    switchPin(switchPin),
+    toggleControl(switchPin, (debfuncptr)&SwitchedToggleControl::switchAction),
+    Control(nodeId, controlId)
 {
 }
 
@@ -46,3 +55,12 @@ void SwitchedToggleControl::switchAction(int state)
     RadioNode::sendData((const void *)data, RF69_MAX_DATA_LEN);
 }
 
+void SwitchedToggleControl::setToggleControl(bool state)
+{
+    enableControl = state ? RELAY_ON : RELAY_OFF;
+}
+
+void SwitchedToggleControl::loop()
+{
+    toggleControl.readButton();
+}
