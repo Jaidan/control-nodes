@@ -27,25 +27,25 @@ class Control
     public:
         Control(const uint8_t nodeId, const uint8_t controlId);
         uint8_t getId();
+        void setToggleControl(bool status);
         void registerControl();
         void loop();
 
     private:
         uint8_t id;
 };
-
-class SwitchedToggleControl : public Control
+class SwitchedToggleControl : public Control, public DebouncedCallback
 {
     public:
         SwitchedToggleControl(const uint8_t switchPin, const uint8_t relayPin, const uint8_t nodeId, const uint8_t controlId);
         void setToggleControl(bool status);
         void loop();
+        virtual void callback(int state);
 
     private:
         Debounced toggleControl;
-        bool enableControl = RELAY_OFF;
-        void switchAction(int state);
         uint8_t switchPin;
         uint8_t relayPin;
+        bool enableControl = RELAY_OFF;
 };
 #endif
