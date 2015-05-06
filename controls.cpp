@@ -6,7 +6,7 @@ const PROGMEM char pinWriteDebug[] = "Writing pin %d to %d";
 Control::Control(const uint8_t nodeId, const uint8_t controlId)
 {
     id = nodeId << 4;
-    id &= controlId;
+    id |= controlId;
 }
 
 uint8_t Control::getId()
@@ -60,5 +60,5 @@ void SwitchedToggleControl::callback(int state)
 
     digitalWrite(relayPin, enableControl);
     SwitchedToggle body = (SwitchedToggle) { enableControl };
-    //RadioNode::sendData(&header, (const void *)&body, RF69_MAX_DATA_LEN);
+    RadioNode::sendData(&header, (const void *)&body, sizeof(body));
 }
