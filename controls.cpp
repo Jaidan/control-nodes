@@ -59,6 +59,6 @@ void SwitchedToggleControl::callback(int state)
     Serial.println(buff);
 
     digitalWrite(relayPin, enableControl);
-    SwitchedToggle body = (SwitchedToggle) { enableControl };
-    RadioNode::sendData(&header, (const void *)&body, sizeof(body));
+    SwitchedToggle body = (SwitchedToggle) { enableControl == RELAY_ON ? 1 : 0 };
+    RadioNode::sendData(&header, (const void *)(&body), sizeof(SwitchedToggle));
 }
