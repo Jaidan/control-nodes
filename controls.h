@@ -8,6 +8,7 @@
 
 #define REGISTRATION 1
 #define SWITCHEDTOGGLE_STATUS 2
+#define ENDLIMIT 3
 
 #include <../debounced/debounced.h>
 #include <../radioNode/radioNode.h>
@@ -47,5 +48,32 @@ class SwitchedToggleControl : public Control, public DebouncedCallback
         uint8_t switchPin;
         uint8_t relayPin;
         bool enableControl = RELAY_OFF;
+};
+
+typedef struct {
+    bool status;
+} EndLimit;
+
+class EndLimitSwitchControl : public Control, DebouncedCallback
+{
+    public:
+        EndLimitSwitchControl(const uint8_t switchPin, const uint8_t nodeId, const uint8_t controlId);
+        void loop();
+        virtual void callback(int state);
+
+    private:
+        Debounced limitControl;
+        uint8_t switchPin;
+};
+
+class GarageLimitControlGroup
+{
+    public:
+        GarageLimitControlGroup(const uint8_t upLimitSwitchPin, const uint8_t downLimitSwitchPin, const uint8_t nodeId, const uint8_t upLimitControlId, const uint8_t downLimitControlId);
+        void loop();
+
+    private:
+        EndLimitSwitchControl upLimitControl;
+        EndLimitSwitchControl downLimitControl;
 };
 #endif

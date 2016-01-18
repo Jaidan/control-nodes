@@ -62,3 +62,38 @@ void SwitchedToggleControl::callback(int state)
     SwitchedToggle body = (SwitchedToggle) { enableControl == RELAY_ON ? 1 : 0 };
     RadioNode::sendData(&header, (const void *)(&body), sizeof(SwitchedToggle));
 }
+
+EndLimitSwitchControl::EndLimitSwitchControl(const uint8_t switchPin, const uint8_t nodeId, const uint8_t controlId) :
+    switchPin(switchPin),
+    limitControl(switchPin, this),
+    Control(nodeId, controlId)
+{
+}
+
+void EndLimitSwitchControl::loop()
+{
+    limitControl.readButton();
+}
+
+void EndLimitSwitchControl::callback(int status)
+{
+    Serial.println(F("End limit state change"));
+    uint8_t id = getId();
+    RadioHeader header = (RadioHeader) { id, ENDLIMIT };
+
+    char buff[50];
+    EndLimit body = (EndLimit) { status };
+    RadioNode::sendData(&header, (const void *)(&body), sizeof(EndLimit));
+}
+
+GarageLimitControlGroup::GarageLimitControlGroup(const uint8_t upLimitSwitchPin, const uint8_t downLimitSwitchPin, const uint8_t nodeId, const uint8_t upLimitControlId, const uint8_t downLimitControlId) :
+    upLimitControl(upLimitSwitchPin, nodeId, upLimitControlId),
+    downLimitControl(downLimitSwitchPin, nodeId, downLimitControlId)
+{
+}
+
+void GarageLimitControlGroup::loop()
+{
+    upLimitControl.loop();
+    downLimitControl.loop();
+}
